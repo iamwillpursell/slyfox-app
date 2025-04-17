@@ -1,5 +1,6 @@
 "use client"
-import { SignOutButton, useUser } from '@clerk/nextjs'
+import { useUser } from '@clerk/nextjs'
+import { SignOutButton } from "@clerk/nextjs"
 
 export default function Dashboard() {
     const { isLoaded, isSignedIn, user} = useUser()
@@ -14,11 +15,24 @@ export default function Dashboard() {
     }
   
     return (
-      <div>
-        Hello {user.firstName}!
-        <SignOutButton>
-            <button className='group relative flex justify-center bg-black py-2 px-3 text-sm font-semibold text-white hover:bg-gray-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 hover:bg-orange-600"><span className="absolute inset-y-0 left-0 flex items-center pl-3"><LockClosedIcon className="h-5 w-5 text-white" aria-hidden="true'>Custom sign out button</button>
-        </SignOutButton>
-      </div>
+        <>
+        <div className="flex py-12 items-center justify-center px-4 sm:px-6 lg:px-8">
+            <h1>Hello {user.firstName}!</h1>
+        </div>
+        <div className="flex items-center justify-center px-4 sm:px-6 lg:px-8">
+            <ul className='py-3'>
+                <li>USER ID: <strong>{user.id}</strong></li>
+                <li>USER EMAIL: <strong>{user.emailAddresses[0]?.emailAddress || 'No email found'}</strong></li>
+            </ul>
+        </div>
+        <div className="flex justify-center flex items-center">
+            <SignOutButton>
+                <a className="group relative inline-block text-sm font-medium text-black focus:ring-3 focus:outline-hidden" href="#">
+                    <span className="absolute inset-0 translate-x-0.5 translate-y-0.5 bg-gray-600 transition-transform group-hover:translate-x-0 group-hover:translate-y-0"></span>
+                    <span className="relative block border border-current bg-white px-8 py-3"> Sign Out </span>
+                </a>
+            </SignOutButton>
+        </div>
+        </>
     )
   }
