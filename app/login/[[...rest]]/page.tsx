@@ -1,8 +1,6 @@
 "use client"
 import React from 'react'
 import Image from "next/image"
-import Link from "next/link"
-import FoxLogo from "../../../public/sly-fox-logo-notext.png"
 /* import { LockClosedIcon } from '@heroicons/react/20/solid' */
 import { SignIn } from "@clerk/nextjs"
 
