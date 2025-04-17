@@ -1,38 +1,69 @@
-"use client"
-import { useUser } from '@clerk/nextjs'
-import { SignOutButton } from "@clerk/nextjs"
+import ServerCard from "@/components/ServerCard";
+import { SignOutButton } from "@clerk/nextjs";
+import { currentUser } from "@clerk/nextjs/server";
+interface Instance {
+    id: string;
+    main_ip: string;
+    label: string;
+    status: string;
+}
 
-export default function Dashboard() {
-    const { isLoaded, isSignedIn, user} = useUser()
-  
-    if (!isLoaded) {
-      return <div>Loading...</div>
+const InstancePage = async () => {
+    const user = await currentUser();
+
+    if (!user) return <div>Please log in to view your instances.</div>;
+    
+    try {
+    const res = await fetch('https://api.vultr.com/v2/instances', {
+      headers: {
+        Authorization: `Bearer ${process.env.NEXT_PUBLIC_VULTR_API_KEY}`,
+      },
+      cache: 'force-cache', // Ensures the data is fetched on every request
+    });
+
+    if (!res.ok) {
+      throw new Error(`Failed to fetch data: ${res.status}`);
     }
-  
-    if (!isSignedIn) {
-      // You could also add a redirect to the sign-in page here
-      return <div>Sign in to view this page</div>
-    }
-  
+
+    const data = await res.json();
+
+    // Assuming the API response contains an array of instances
+    const instances: Instance[] = data.instances || [];
+
     return (
-        <>
-        <div className="flex py-12 items-center justify-center px-4 sm:px-6 lg:px-8">
-            <h1>Hello {user.firstName}!</h1>
-        </div>
-        <div className="flex items-center justify-center px-4 sm:px-6 lg:px-8">
-            <ul className='py-3'>
-                <li>USER ID: <strong>{user.id}</strong></li>
-                <li>USER EMAIL: <strong>{user.emailAddresses[0]?.emailAddress || 'No email found'}</strong></li>
-            </ul>
-        </div>
-        <div className="flex justify-center flex items-center">
-            <SignOutButton>
-                <a className="group relative inline-block text-sm font-medium text-black focus:ring-3 focus:outline-hidden" href="#">
-                    <span className="absolute inset-0 translate-x-0.5 translate-y-0.5 bg-gray-600 transition-transform group-hover:translate-x-0 group-hover:translate-y-0"></span>
-                    <span className="relative block border border-current bg-white px-8 py-3"> Sign Out </span>
-                </a>
-            </SignOutButton>
-        </div>
-        </>
-    )
+      <div className="container mx-auto px-4 mt-5">
+        <h1 className="text-2xl font-bold mb-4">Welcome {user?.firstName}!</h1>
+        <h1 className="my-5">Here are your server instances:</h1>
+      <ul>
+        {instances.length > 0 ? (
+          instances.map((instance) => (
+            <ServerCard
+              key={instance.id}
+              id={instance.id}
+              main_ip={instance.main_ip}
+              label={instance.label}
+              status={instance.status}
+            />
+          ))
+        ) : (
+          <li>No instances available</li>
+        )}
+      </ul>
+      <SignOutButton>
+        <button className="border-3 black p-2 w-1/4 my-5 shadow-[4px_4px_0_0_#000000] border-black border-2 text-base bg-white hover:scale-105 transition-transform duration-300 ease-in-out">
+          Sign Out
+        </button>
+      </SignOutButton>
+      </div>
+    );
+  } catch (error) {
+    console.error(error);
+    return (
+      <ul>
+        <li>Error fetching data</li>
+      </ul>
+    );
   }
+};
+
+export default InstancePage;
