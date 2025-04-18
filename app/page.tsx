@@ -15,13 +15,13 @@ export default function Home() {
           priority
         />
           <h1 className="text-4xl font-bold text-gray-900 sm:text-5xl">
-            Your Curated Instance 
+            Curated Server Deployment With
             <strong className="text-orange-600"> Intelligence </strong>
-            Quick and Easy
+            Made Quick and Easy
           </h1>
 
           <p className="mt-4 text-base text-pretty text-gray-700 sm:text-lg/relaxed">
-          Get all of your key insights in one place. Sly Fox is a curated instance intelligence platform that helps you make sense of your data.
+          Getting a server up and running has never been easier. Deploy and manager your instances with ease with our intuitive interface. Kiss confusing dashboard an endless settings goodbye.
           </p>
 
           <div className="mt-4 flex justify-center gap-4 sm:mt-6">

@@ -1,6 +1,8 @@
 import ServerCard from "@/components/ServerCard";
+import { getInstances } from "@/lib/fetch_vultr";
 import { SignOutButton } from "@clerk/nextjs";
 import { currentUser } from "@clerk/nextjs/server";
+
 interface Instance {
     id: string;
     main_ip: string;
@@ -9,26 +11,17 @@ interface Instance {
 }
 
 const InstancePage = async () => {
+
     const user = await currentUser();
 
     if (!user) return <div>Please log in to view your instances.</div>;
+
+    const instanceData = await getInstances()
     
-    try {
-    const res = await fetch('https://api.vultr.com/v2/instances', {
-      headers: {
-        Authorization: `Bearer ${process.env.NEXT_PUBLIC_VULTR_API_KEY}`,
-      },
-      cache: 'force-cache', // Ensures the data is fetched on every request
-    });
 
-    if (!res.ok) {
-      throw new Error(`Failed to fetch data: ${res.status}`);
-    }
-
-    const data = await res.json();
 
     // Assuming the API response contains an array of instances
-    const instances: Instance[] = data.instances || [];
+    const instances: Instance[] = instanceData.instances || [];
 
     return (
       <div className="container mx-auto px-4 mt-5">
@@ -56,14 +49,6 @@ const InstancePage = async () => {
       </SignOutButton>
       </div>
     );
-  } catch (error) {
-    console.error(error);
-    return (
-      <ul>
-        <li>Error fetching data</li>
-      </ul>
-    );
-  }
-};
+}
 
 export default InstancePage;
